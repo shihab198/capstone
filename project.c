@@ -34,7 +34,7 @@ struct Order {
     struct Customer customer;
     struct Measurement measurements;
     float totalAmount;
-    int status; // 0: In Progress, 1: Completed
+    int status; 
 };
 
 struct InventoryItem {
@@ -232,7 +232,6 @@ void customer_delete(struct Customer *customers, int *numCustomers) {
 
     int index = search_customer(customers, *numCustomers, customerId);
     if (index != -1) {
-        // Shift the elements to delete the customer
         for (int i = index; i < *numCustomers - 1; ++i) {
             customers[i] = customers[i + 1];
         }
@@ -258,7 +257,7 @@ int order_add(struct Order *orders, int *numOrders, struct Customer *customers, 
             printf(ANSI_COLOR_BOLD ANSI_COLOR_MAGENTA "Taking measurements for order ID %d:\n", orders[*numOrders].id, ANSI_COLOR_RESET);
             takeMeasurements(&(orders[*numOrders].measurements));
 
-            orders[*numOrders].status = 0; // In Progress
+            orders[*numOrders].status = 0; 
             orders[*numOrders].totalAmount = calculateTotalAmount(orders[*numOrders].measurements);
             (*numOrders)++;
 
@@ -283,7 +282,6 @@ void order_modify(struct Order *orders, int numOrders) {
     if (index != -1) {
         printf(ANSI_COLOR_BOLD ANSI_COLOR_MAGENTA "Modifying order ID %d:\n", orders[index].id, ANSI_COLOR_RESET);
 
-        // Allow modification of measurements
         takeMeasurements(&(orders[index].measurements));
         orders[index].totalAmount = calculateTotalAmount(orders[index].measurements);
 
@@ -300,7 +298,6 @@ void order_delete(struct Order *orders, int *numOrders) {
 
     int index = search_order(orders, *numOrders, orderId);
     if (index != -1) {
-        // Shift the elements to delete the order
         for (int i = index; i < *numOrders - 1; ++i) {
             orders[i] = orders[i + 1];
         }
@@ -439,7 +436,6 @@ void inventory_delete(struct InventoryItem *inventory, int *numItems) {
     }
 
     if (index != -1) {
-        // Shift the elements to delete the inventory item
         for (int i = index; i < *numItems - 1; ++i) {
             inventory[i] = inventory[i + 1];
         }
@@ -581,17 +577,16 @@ void takePantMeasurements(struct Measurement *measurements) {
 }
 
 float calculateTotalAmount(struct Measurement measurements) {
-    // Rates for calculating total amount (adjust these as needed)
-    const float shirtRate = 2.5;  // Rate for shirts
-    const float pantRate = 3.0;   // Rate for pants
+    const float shirtRate = 2.5;  
+    const float pantRate = 3.0;  
 
     float totalAmount = 0.0;
 
     switch (garmentType) {
-        case 1:  // Shirt
+        case 1:  
             totalAmount = shirtRate * (measurements.chest + measurements.waist + measurements.hips);
             break;
-        case 2:  // Pant
+        case 2:  
             totalAmount = pantRate * (measurements.inseam + measurements.waist);
             break;
         default:
@@ -610,13 +605,11 @@ void saveDataToFile(struct Customer *customers, int numCustomers, struct Order *
         return;
     }
 
-    // Save customer data
     fprintf(file, "Customers:\n");
     for (int i = 0; i < numCustomers; ++i) {
         fprintf(file, "%d %s %s\n", customers[i].id, customers[i].name, customers[i].contactNumber);
     }
 
-    // Save order data
     fprintf(file, "\nOrders:\n");
     for (int i = 0; i < numOrders; ++i) {
         fprintf(file, "%d %d %f %f %f %f %d %f\n", orders[i].id, orders[i].customer.id,
@@ -624,7 +617,6 @@ void saveDataToFile(struct Customer *customers, int numCustomers, struct Order *
                 orders[i].measurements.inseam, orders[i].status, orders[i].totalAmount);
     }
 
-    // Save inventory data
     fprintf(file, "\nInventory:\n");
     for (int i = 0; i < numItems; ++i) {
         fprintf(file, "%d %s %f\n", inventory[i].id, inventory[i].itemName, inventory[i].price);
@@ -642,13 +634,11 @@ void loadDataFromFile(struct Customer *customers, int *numCustomers, struct Orde
         return;
     }
 
-    // Load customer data
     fscanf(file, "Customers:\n");
     while (fscanf(file, "%d %s %s", &customers[*numCustomers].id, customers[*numCustomers].name, customers[*numCustomers].contactNumber) == 3) {
         (*numCustomers)++;
     }
 
-    // Load order data
     fscanf(file, "\nOrders:\n");
     while (fscanf(file, "%d %d %f %f %f %f %d %f", &orders[*numOrders].id, &orders[*numOrders].customer.id,
                   &orders[*numOrders].measurements.chest, &orders[*numOrders].measurements.waist,
@@ -657,15 +647,13 @@ void loadDataFromFile(struct Customer *customers, int *numCustomers, struct Orde
         (*numOrders)++;
     }
 
-    // Load inventory data
     fscanf(file, "\nInventory:\n");
     while (fscanf(file, "%d %s %f", &inventory[*numItems].id, inventory[*numItems].itemName, &inventory[*numItems].price) == 3) {
         (*numItems)++;
     }
 
     fclose(file);
-
-    // Update ID counters
+    
     *customerIdCounter = customers[*numCustomers - 1].id + 1;
     *orderIdCounter = orders[*numOrders - 1].id + 1;
     *itemIdCounter = inventory[*numItems - 1].id + 1;
@@ -682,7 +670,6 @@ void deleteAllData(struct Customer *customers, int *numCustomers,
     *orderIdCounter = 1;
     *itemIdCounter = 1;
 
-    // Reset arrays
     memset(customers, 0, sizeof(struct Customer) * MAX_CUSTOMERS);
     memset(orders, 0, sizeof(struct Order) * MAX_ORDERS);
     memset(inventory, 0, sizeof(struct InventoryItem) * MAX_ITEMS);
